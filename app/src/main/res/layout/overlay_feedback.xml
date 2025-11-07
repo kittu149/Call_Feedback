@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:background="#FFFFFFFF">
+
+            <!-- Q1 Overall Quality -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1. Overall Quality"
+                android:paddingBottom="4dp" />
+
+            <RadioGroup
+                android:id="@+id/q1_quality_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton android:id="@+id/q1_good" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Good"/>
+                <RadioButton android:id="@+id/q1_fair" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fair"/>
+                <RadioButton android:id="@+id/q1_poor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Poor"/>
+            </RadioGroup>
+
+            <!-- Q2 Audio Issues -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2. Audio Issues (select all that apply):"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp"/>
+
+            <CheckBox
+                android:id="@+id/q2_dropped"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Call was dropped"/>
+            <CheckBox
+                android:id="@+id/q2_could_not_hear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Could not hear the other person properly"/>
+            <CheckBox
+                android:id="@+id/q2_other_could_not_hear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="The other person could not hear me properly"/>
+            <CheckBox
+                android:id="@+id/q2_background_noise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="There was background noise"/>
+            <CheckBox
+                android:id="@+id/q2_echo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="There was echo during the call"/>
+
+            <!-- Q3 Environment -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3. Your Environment"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp"/>
+
+            <RadioGroup
+                android:id="@+id/q3_env_group"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton android:id="@+id/q3_indoor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Indoor"/>
+                <RadioButton android:id="@+id/q3_outdoor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Outdoor"/>
+                <RadioButton android:id="@+id/q3_vehicle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="In Vehicle"/>
+                <RadioButton android:id="@+id/q3_noisy" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Noisy Area"/>
+                <RadioButton android:id="@+id/q3_quiet" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quiet Area"/>
+            </RadioGroup>
+
+            <!-- Q4 Additional Comments -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="4. Additional Comments"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp"/>
+
+            <EditText
+                android:id="@+id/q4_comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:hint="Type here"
+                android:minLines="2"
+                android:maxLines="5"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:paddingTop="24dp">
+
+                <Button
+                    android:id="@+id/overlaySubmitButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Submit"/>
+                <Button
+                    android:id="@+id/overlayCloseButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Close"
+                    android:layout_marginStart="16dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
