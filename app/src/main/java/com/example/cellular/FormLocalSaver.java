@@ -1,10 +1,8 @@
 package com.example.cellular;
 
 import android.content.Context;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

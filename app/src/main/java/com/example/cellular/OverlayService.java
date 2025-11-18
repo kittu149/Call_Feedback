@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import java.util.List;
 import android.telephony.TelephonyManager;
 import android.telephony.CellInfo;
-import android.telephony.CellSignalStrength;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
 import android.telephony.CellInfoGsm;
@@ -69,7 +68,7 @@ public class OverlayService extends Service {
         // Q1
         RadioGroup q1Group = overlayView.findViewById(R.id.q1_quality_group);
 
-        // Q2 (CheckBoxes)
+        // Q2
         CheckBox q2Dropped = overlayView.findViewById(R.id.q2_dropped);
         CheckBox q2CouldNotHear = overlayView.findViewById(R.id.q2_could_not_hear);
         CheckBox q2OtherCouldNotHear = overlayView.findViewById(R.id.q2_other_could_not_hear);
@@ -79,7 +78,7 @@ public class OverlayService extends Service {
         // Q3
         RadioGroup q3EnvGroup = overlayView.findViewById(R.id.q3_env_group);
 
-        // Q4 comments (was Q5)
+        // Q4
         EditText q4EditText = overlayView.findViewById(R.id.q4_comments);
 
         // Buttons
@@ -101,7 +100,7 @@ public class OverlayService extends Service {
             if (q2Echo.isChecked()) q2Selections.append("There was echo during the call,");
 
             if (q2Selections.length() > 0)
-                q2Selections.setLength(q2Selections.length() - 1); // Remove trailing comma
+                q2Selections.setLength(q2Selections.length() - 1);
 
             String q3 = getRadioSelection(q3EnvGroup, new int[] {
                     R.id.q3_indoor, R.id.q3_outdoor, R.id.q3_vehicle, R.id.q3_noisy, R.id.q3_quiet
@@ -111,7 +110,7 @@ public class OverlayService extends Service {
 
             String q4 = q4EditText.getText().toString();
 
-            getLastLocationAndSendFeedback(q1, q2Selections.toString(), q3, q4, "");
+            getLastLocationAndSendFeedback(q1, q2Selections.toString(), q3, q4);
         });
 
         close.setOnClickListener(v -> removeOverlay());
@@ -175,9 +174,7 @@ public class OverlayService extends Service {
         return "Unavailable";
     }
 
-    private void getLastLocationAndSendFeedback(
-            String q1, String q2, String q3, String q4, String location
-    ) {
+    private void getLastLocationAndSendFeedback(String q1, String q2, String q3, String q4) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(loc -> {
@@ -204,7 +201,7 @@ public class OverlayService extends Service {
             data.put("overall_quality", q1);
             data.put("audio_issues", q2);
             data.put("environment", q3);
-            data.put("comments", q4); // Now Q4 directly refers to comments
+            data.put("comments", q4);
             data.put("location", location);
             data.put("connection_type", networkType);
             data.put("signal_strength", signalStrength);
