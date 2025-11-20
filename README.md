@@ -1,88 +1,179 @@
-# Call Feedback
 
-Call Feedback is an Android app (built with Android Studio) that shows an overlay feedback form after phone calls so that users can quickly rate call quality and report issues like drops, echo, or background noise.  
+# 📞 Call Feedback Android App
+
+Call Feedback is an Android app (built with Android Studio) that shows an overlay feedback form after phone calls so that users can quickly rate call quality and report issues like drops, echo, or background noise.
 Feedback is sent to a backend server for logging/analysis.
 
----
+## 💡 Overview
 
-## Table of Contents
+This repository contains two main components:
 
-- [Overview](#overview)
-- [App Flow](#app-flow)
-- [Project Structure](#project-structure)
-- [Android Module Structure](#android-module-structure)
-  - [Manifest & Permissions](#manifest--permissions)
-  - [Java/Kotlin Code](#javakotlin-code)
-  - [XML Layouts](#xml-layouts)
-  - [Network Security Configuration](#network-security-configuration)
-- [Backend (server.py)](#backend-serverpy)
-- [Build & Run](#build--run)
-  - [Using Android Studio](#using-android-studio)
-  - [Using Command Line (Gradle)](#using-command-line-gradle)
-- [Notes & Future Improvements](#notes--future-improvements)
+1. Android App Module (app/): The core application responsible for call state detection, overlay rendering, and data submission.
 
----
+2. Simple Backend Server (server.py): A lightweight Python script intended to receive, log, and store the JSON feedback payloads.
 
-## Overview
+## Key Features
 
-This project contains:
+1. Post-Call Trigger: Automatically detects when a call disconnects using READ_PHONE_STATE.
 
-- An **Android app module** (`app/`) that:
-  - Listens to phone call state changes.
-  - Shows a **system overlay** with a feedback form on top of other apps.
-  - Captures:
-    - Overall call quality (Good/Fair/Poor)
-    - Common audio issues (dropped call, echo, background noise, etc.)
-    - Environment (indoor/outdoor/vehicle/noisy/quiet)
-    - Free-form comments :contentReference[oaicite:0]{index=0}
-  - Sends feedback to a backend server.
+2. System Overlay: Displays a non-intrusive feedback form over any application using SYSTEM_ALERT_WINDOW.
 
-- A **simple backend script** (`server.py`) at the repo root, intended to receive and store feedback from the app. :contentReference[oaicite:1]{index=1}
+3. Data Capture: Collects structured data on quality (Good/Fair/Poor), audio issues, environment, and free-form comments.
 
----
+4. Local & Remote Logging: Supports local saving for offline operation and network posting to the backend.
 
-## App Flow
+## ⚙️ App Flow: From Call End to Data Submission
 
-High-level flow of the Android app:
+The application follows a defined lifecycle to ensure the feedback prompt is timely and reliable.
 
-1. **User opens the app**  
-   - `MainActivity` is the launcher activity. It likely shows a simple screen with a *“Configure Overlay”* button (bound to `activity_launcher.xml`) that starts the overlay permission/configuration flow.   
+1. Overlay Permission Setup: The user uses MainActivity to navigate to OverlayPermissionActivity and grant the Draw over other apps (`SYSTEM_ALERT_WINDOW`) permission.
 
-2. **Overlay Permission**  
-   - `OverlayPermissionActivity` is used to request **Draw over other apps** permission (`SYSTEM_ALERT_WINDOW`) so the app can display an overlay feedback form. :contentReference[oaicite:3]{index=3}  
+2. Call Detection: PhoneCallReceiver (a BroadcastReceiver listening to `android.intent.action.PHONE_STATE`) detects the transition from an active call state to a disconnected state.
 
-3. **Call Detection**  
-   - `PhoneCallReceiver` is a broadcast receiver registered for `android.intent.action.PHONE_STATE` and uses `READ_PHONE_STATE` permission to detect when a phone call ends. :contentReference[oaicite:4]{index=4}  
+3. Service Trigger: The PhoneCallReceiver starts the OverlayService.
 
-4. **Overlay Feedback Form**  
-   - On relevant call state changes (e.g., after call ends), `PhoneCallReceiver` triggers `OverlayService`.
-   - `OverlayService` shows the overlay UI defined in `overlay_feedback.xml`, which contains:
-     - Q1: Overall Quality (Good/Fair/Poor) via `RadioGroup`
-     - Q2: Audio Issues (multiple `CheckBox` options)
-     - Q3: Environment (indoor/outdoor/vehicle/noisy/quiet)
-     - Q4: Additional comments (`EditText`)
-     - Buttons: **Submit** and **Close** :contentReference[oaicite:5]{index=5}  
+4. Overlay Display: OverlayService inflates the UI defined in `overlay_feedback.xml` and displays it using the Android WindowManager.
 
-5. **Saving & Posting Feedback**
-   - `FormLocalSaver`: helper class (based on its name) used to save filled feedback locally (e.g., SharedPreferences/file/DB).
-   - `ServerPoster`: helper class intended to post the feedback to the backend server (likely using the IP configured in `network_security_config.xml`). :contentReference[oaicite:6]{index=6}  
+5. Data Submission: Upon clicking the "Submit" button:
 
----
+    - `FormLocalSaver` handles local storage (e.g., for retry logic).
 
-## Project Structure
+    - `ServerPoster` packages the data into a JSON payload and sends an HTTP POST request to the backend.
 
-At the repo root you’ll see a typical Android/Gradle layout: :contentReference[oaicite:7]{index=7}  
+## 📂 Project Structure
+
+A high-level view of the repository layout:
 
 ```text
+
 Call_Feedback/
-├── .idea/                  # Android Studio project files
-├── app/                    # Android app module
-├── gradle/                 # Gradle wrapper files
-├── .gitignore
-├── build.gradle            # Top-level Gradle build script
-├── gradle.properties
-├── gradlew                 # Gradle wrapper (Unix)
-├── gradlew.bat             # Gradle wrapper (Windows)
-├── server.py               # Simple backend server to receive feedback
-├── feedbacks.jsonl         # Sample/collected feedback data in JSON Lines format
-└── settings.gradle         # Includes the app module
+├── app/                        # Main Android Application Module
+│   ├── src/main/
+│   │   ├── AndroidManifest.xml # Permissions & component declarations
+│   │   ├── java/               # Java/Kotlin Source Code (Activities, Services, etc.)
+│   │   └── res/                # Resources (Layouts, XML configs)
+├── gradle/                     # Gradle Wrapper files
+├── build.gradle                # Top-level Gradle configuration
+├── settings.gradle             # Includes the app module
+├── server.py                   # Simple Python backend server
+└── feedbacks.jsonl             # Log file for received feedback data
+```
+
+## 📱 Android Module Details
+
+`AndroidManifest.xml` (Permissions & Components)
+
+Required Permissions:
+
+| Permission                     | Purpose                                                                 |
+|--------------------------------|-------------------------------------------------------------------------|
+| `READ_PHONE_STATE`             | Mandatory for detecting call state changes.                              |       
+| `SYSTEM_ALERT_WINDOW`          | Mandatory for drawing the overlay UI over other apps.                   |
+| `INTERNET`                     | Required to post feedback data to the backend server.                   |
+| `ACCESS_NETWORK_STATE`         | Recommended for checking network availability before posting.           |
+| `ACCESS_COARSE_LOCATION`       | Optional: Captures approximate device location for feedback metadata.   |
+| `ACCESS_FINE_LOCATION`         | Optional: Captures precise location metadata during feedback.           |
+| `ACCESS_BACKGROUND_LOCATION`   | Optional: Needed if location is captured when the app is in background. |
+
+
+
+## Key Components:
+
+- Activities: `MainActivity`, `OverlayPermissionActivity`
+
+- BroadcastReceiver: `PhoneCallReceiver`
+
+- Service: `OverlayService` (handles the floating UI)
+
+## Backend Integration Configuration
+
+The application uses an inline Network Security Configuration to permit cleartext (HTTP) traffic to a specific development IP:
+
+`android:networkSecurityConfig="@xml/network_security_config"`
+
+This configuration is defined in `app/src/main/res/xml/network_security_config.xml` and currently targets: http://`IP ADDR`/. This must be updated to HTTPS for production environments.
+
+## Example Feedback Payload
+
+The `ServerPoster` utility constructs and sends a JSON object similar to the structure below:
+
+```text
+{
+  "overall_quality": "Good",
+  "audio_issues": "There was background noise",
+  "environment": "In Vehicle",
+  "comments": "",
+  "location": "Location not available",
+  "connection_type": "WiFi",
+  "signal_strength": "Unavailable",
+  "timestamp": 1763575301351
+}
+```
+
+## 🌐 Backend (`server.py`)
+
+The backend script is a simple Python server designed to run locally for development and logging purposes.
+
+### Running the Server
+
+To start the server and begin receiving feedback:
+
+`python server.py`
+
+> **Note:** Ensure that the IP address in your Android app's `network_security_config.xml`
+and `OverlayService.java` matches the machine running `server.py`, and that necessary firewall ports are open.
+> Received feedback is appended to the `feedbacks.jsonl`(Which will be present in the same directory as that of `server.py`) file in **JSON Lines** format.
+
+---
+
+## 🛠 Build & Run Instructions
+
+### **Prerequisites**
+- Android Studio (**Flamingo or newer** recommended)
+- Android SDK installed
+- A physical device or emulator with phone/call state capability
+- Python 3 (for running `server.py` during testing)
+
+---
+
+## 🚀 Using Android Studio
+
+1. **Open Project**  
+   *File → Open → Select the `Call_Feedback` folder*
+
+2. **Sync & Build**  
+   Wait for Gradle sync to complete.  
+   If required: *File → Sync Project with Gradle Files*
+
+3. **Run**  
+   Select the **app** run configuration → Click **Run ▶**
+
+---
+
+## 💻 Using Command Line (Gradle)
+
+Run all commands from the project root directory (`Call_Feedback/`).
+
+| Action                     | macOS/Linux             | Windows              | Output Location                                           |
+|---------------------------|--------------------------|----------------------|-----------------------------------------------------------|
+| **Clean Project**         | `./gradlew clean`        | `gradlew clean`      | N/A                                                       |
+| **Build Debug APK**       | `./gradlew assembleDebug`| `gradlew assembleDebug` | `app/build/outputs/apk/debug/app-debug.apk`             |
+| **Build Release APK**     | `./gradlew assembleRelease` | `gradlew assembleRelease` | `app/build/outputs/apk/release/app-release-unsigned.apk` |
+| **Full Build (Tests + Assemble)** | `./gradlew build` | `gradlew build` | N/A |
+
+---
+
+## 📌 Notes & Future Roadmap
+
+- **Security**  
+  Cleartext (HTTP) traffic is currently enabled for development.  
+  **MUST** migrate to **HTTPS** for production.
+
+- **Backend Improvements**  
+  Enhance `server.py` with:
+  - request validation
+  - structured error responses
+  - database integration instead of `feedbacks.jsonl`
+
+- **Accessibility**  
+  Review `overlay_feedback.xml` for better accessibility & touch target sizing.
