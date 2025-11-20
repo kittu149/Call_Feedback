@@ -4,7 +4,25 @@
 Call Feedback is an Android app (built with Android Studio) that shows an overlay feedback form after phone calls so that users can quickly rate call quality and report issues like drops, echo, or background noise.
 Feedback is sent to a backend server for logging/analysis.
 
-## 💡 Overview
+## Table of Contents
+- [💡 Overview](#overview)
+- [Key Features](#key-features)
+- [⚙️ App Flow](#app-flow)
+- [📂 Project Structure](#project-structure)
+- [📱 Android Module Details](#android-module-details)
+- [Key Components](#key-components)
+- [Backend Integration](#backend-integration)
+- [Example Payload](#example-payload)
+- [🌐 Backend](#backend)
+- [Running the Server](#running-the-server)
+- [🛠 Build Instructions](#build-instructions)
+- [🚀 Android Studio](#android-studio)
+- [💻 Command Line](#command-line)
+- [📌 Notes](#notes)
+
+---
+
+## <a id="overview"></a>💡 Overview
 
 This repository contains two main components:
 
@@ -12,7 +30,7 @@ This repository contains two main components:
 
 2. Simple Backend Server (server.py): A lightweight Python script intended to receive, log, and store the JSON feedback payloads.
 
-## Key Features
+## <a id="key-features"></a>Key Features
 
 1. Post-Call Trigger: Automatically detects when a call disconnects using READ_PHONE_STATE.
 
@@ -22,7 +40,7 @@ This repository contains two main components:
 
 4. Local & Remote Logging: Supports local saving for offline operation and network posting to the backend.
 
-## ⚙️ App Flow: From Call End to Data Submission
+## <a id="app-flow"></a>⚙️ App Flow: From Call End to Data Submission
 
 The application follows a defined lifecycle to ensure the feedback prompt is timely and reliable.
 
@@ -40,7 +58,7 @@ The application follows a defined lifecycle to ensure the feedback prompt is tim
 
     - `ServerPoster` packages the data into a JSON payload and sends an HTTP POST request to the backend.
 
-## 📂 Project Structure
+## <a id="project-structure"></a>📂 Project Structure
 
 A high-level view of the repository layout:
 
@@ -59,7 +77,7 @@ Call_Feedback/
 └── feedbacks.jsonl             # Log file for received feedback data
 ```
 
-## 📱 Android Module Details
+## <a id="android-module-details"></a>📱 Android Module Details
 
 `AndroidManifest.xml` (Permissions & Components)
 
@@ -77,7 +95,7 @@ Required Permissions:
 
 
 
-## Key Components:
+## <a id="key-components"></a>Key Components
 
 - Activities: `MainActivity`, `OverlayPermissionActivity`
 
@@ -85,7 +103,7 @@ Required Permissions:
 
 - Service: `OverlayService` (handles the floating UI)
 
-## Backend Integration Configuration
+## <a id="backend-integration"></a>Backend Integration Configuration
 
 The application uses an inline Network Security Configuration to permit cleartext (HTTP) traffic to a specific development IP:
 
@@ -93,7 +111,7 @@ The application uses an inline Network Security Configuration to permit cleartex
 
 This configuration is defined in `app/src/main/res/xml/network_security_config.xml` and currently targets: http://`IP ADDR`/. This must be updated to HTTPS for production environments.
 
-## Example Feedback Payload
+## <a id="example-payload"></a>Example Feedback Payload
 
 The `ServerPoster` utility constructs and sends a JSON object similar to the structure below:
 
@@ -110,11 +128,11 @@ The `ServerPoster` utility constructs and sends a JSON object similar to the str
 }
 ```
 
-## 🌐 Backend (`server.py`)
+## <a id="backend"></a>🌐 Backend (`server.py`)
 
 The backend script is a simple Python server designed to run locally for development and logging purposes.
 
-### Running the Server
+### <a id="running-the-server"></a>Running the Server
 
 To start the server and begin receiving feedback:
 
@@ -126,7 +144,7 @@ and `OverlayService.java` matches the machine running `server.py`, and that nece
 
 ---
 
-## 🛠 Build & Run Instructions
+## <a id="build-instructions"></a>🛠 Build & Run Instructions
 
 ### **Prerequisites**
 - Android Studio (**Flamingo or newer** recommended)
@@ -136,7 +154,7 @@ and `OverlayService.java` matches the machine running `server.py`, and that nece
 
 ---
 
-## 🚀 Using Android Studio
+## <a id="android-studio"></a>🚀 Using Android Studio
 
 1. **Open Project**  
    *File → Open → Select the `Call_Feedback` folder*
@@ -150,7 +168,7 @@ and `OverlayService.java` matches the machine running `server.py`, and that nece
 
 ---
 
-## 💻 Using Command Line (Gradle)
+## <a id="command-line"></a>💻 Using Command Line (Gradle)
 
 Run all commands from the project root directory (`Call_Feedback/`).
 
@@ -163,7 +181,7 @@ Run all commands from the project root directory (`Call_Feedback/`).
 
 ---
 
-## 📌 Notes & Future Roadmap
+## <a id="notes"></a>📌 Notes & Future Roadmap
 
 - **Security**  
   Cleartext (HTTP) traffic is currently enabled for development.  
